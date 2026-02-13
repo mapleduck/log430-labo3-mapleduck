@@ -53,7 +53,6 @@ CREATE TABLE stocks (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 );
 
-
 -- Mock data: users
 INSERT INTO users (name, email) VALUES
 ('Ada Lovelace', 'alovelace@example.com'),
@@ -66,3 +65,10 @@ INSERT INTO products (name, sku, price) VALUES
 ('Keyboard DEF', 'KB67890', 59.50),
 ('Gadget XYZ', 'GG12345', 5.75),
 ('27-inch Screen WYZ', 'SC27289', 299.75);
+
+-- Mock data: stocks
+INSERT INTO stocks (product_id, quantity) VALUES
+(1, 10),
+(2, 50),
+(3, 100),
+(4, 0);
