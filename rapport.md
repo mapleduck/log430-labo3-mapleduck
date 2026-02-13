@@ -1,6 +1,16 @@
+# LOG430 - Rapport du laboratoire 02
+ÉTS - LOG430 - Architecture logicielle - Hiver 2026 - Groupe 1
+
+Étudiant: Yanni Haddar
+
+## Questions
+
 > 💡 Question 1 : Dans la RFC 7231, nous trouvons que certaines méthodes HTTP sont considérées comme sûres (safe) ou idempotentes, en fonction de leur capacité à modifier (ou non) l'état de l'application. Lisez les sections 4.2.1 et 4.2.2 de la RFC 7231 et répondez : parmi les méthodes mentionnées dans l'activité 2, lesquelles sont sûres, non sûres, idempotentes et/ou non idempotentes?
 
+
 > 💡 Question 2 : Décrivez l'utilisation de la méthode join dans ce cas. Utilisez les méthodes telles que décrites à Simple Relationship Joins et Joins to a Target with an ON Clause dans la documentation SQLAlchemy pour ajouter les colonnes demandées dans cette activité. Veuillez inclure le code pour illustrer votre réponse.
+
+
 
 > 💡 Question 3 : Quels résultats avez-vous obtenus en utilisant l’endpoint POST /stocks/graphql-query avec la requête suggérée ? Veuillez joindre la sortie de votre requête dans Postman afin d’illustrer votre réponse.
 
@@ -91,4 +101,23 @@ Gracefully Stopping... press Ctrl+C again to force
 > 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
 
 
-Deployment:
+
+## Déploiement
+
+Déploiement plus complexe cette fois ci. Il a fallu être plus attentif. Il a fallu nettoyer les conteneurs des labos précédents, et rajouter plusieurs vérifications et nettoyage au ci yml du runner, comme par exemple:
+```
+- name: Cleanup
+    run: |
+        docker network rm labo02-network 2>/dev/null || true
+        docker rm -f mysql redis store_manager_cli 2>/dev/null || true
+        docker compose down -v --remove-orphans || true
+```
+
+Plusieurs de ces solutions ont été trouvées grâce à stackoverflow.
+
+Résultat final, les tests passent le CI:
+
+![runner output](./docs/img/Screenshot%20from%202026-02-05%2021-05-55.png)
+
+Resultat vu depuis github:
+![github UI](./docs/img/Screenshot%20from%202026-02-05%2021-06-13.png)
