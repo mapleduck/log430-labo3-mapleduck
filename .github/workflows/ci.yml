@@ -26,6 +26,7 @@ jobs:
           docker compose down -v --remove-orphans || true
           docker network rm labo03-network 2>/dev/null || true
           docker rm -f mysql redis store_manager 2>/dev/null || true
+          docker system prune -f --volumes #Nettoyage aggressif, mesure de last resort
           
       - name: Demarrer les services
         run: |

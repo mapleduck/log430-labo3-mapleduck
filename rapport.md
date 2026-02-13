@@ -142,7 +142,7 @@ Il s'agit du résultat attendu.
 
 > 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
 
-
+Ces conteneurs peuvent se communiquer car ils sont sur le même network et forment une connexion bridge, qui signifie que il y a une transparence complète de réseau entre les deux conteneurs.
 
 ## Déploiement
 
