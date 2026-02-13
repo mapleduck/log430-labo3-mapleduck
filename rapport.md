@@ -10,6 +10,16 @@
 
 > 💡 Question 2 : Décrivez l'utilisation de la méthode join dans ce cas. Utilisez les méthodes telles que décrites à Simple Relationship Joins et Joins to a Target with an ON Clause dans la documentation SQLAlchemy pour ajouter les colonnes demandées dans cette activité. Veuillez inclure le code pour illustrer votre réponse.
 
+```
+# Join ici
+results = session.query(
+    Product.name,
+    Product.sku,
+    Product.price,
+    Stock.quantity,
+).join(Product, Stock.product_id == Product.id).all()
+```
+
 
 
 > 💡 Question 3 : Quels résultats avez-vous obtenus en utilisant l’endpoint POST /stocks/graphql-query avec la requête suggérée ? Veuillez joindre la sortie de votre requête dans Postman afin d’illustrer votre réponse.
@@ -142,6 +152,13 @@ Il s'agit du résultat attendu.
 
 > 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
 
+Voici la section que les deux fins de fichier ont en commun:
+```
+networks:
+  labo03-network:
+    driver: bridge
+    external: true
+```
 Ces conteneurs peuvent se communiquer car ils sont sur le même network et forment une connexion bridge, qui signifie que il y a une transparence complète de réseau entre les deux conteneurs.
 
 ## Déploiement

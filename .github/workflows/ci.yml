@@ -51,6 +51,17 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Attendre que les tables soient prêtes
+        run: |
+          timeout=60
+          until docker exec mysql mysql -ulabo03 -plabo03 labo03_db -e "SELECT 1 FROM users LIMIT 1;" >/dev/null 2>&1; do
+            echo "MySQL est debout, mais j'attends la création des tables..."
+            sleep 2
+            timeout=$((timeout - 2))
+            if [ $timeout -le 0 ]; then exit 1; fi
+          done
+          echo "Tables prêtes, lancement des tests !"
         
       - name: Executer les tests de validation
         run: docker exec store_manager pytest
