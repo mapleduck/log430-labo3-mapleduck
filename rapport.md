@@ -87,3 +87,8 @@ supplier_app-1  | ...
 supplier_app-1  | 2026-02-12 23:57:49,219 - INFO - Waiting 10 seconds until next call...
 Gracefully Stopping... press Ctrl+C again to force
 ```
+
+> 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
+
+
+Deployment:

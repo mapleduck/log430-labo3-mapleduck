@@ -32,20 +32,28 @@ jobs:
           docker network create labo03-network || true
           docker compose up -d --build
 
-      - name: Attendre MySQL (Santé de la DB)
+      - name: Wait MySQL
         run: |
           timeout=60
+          until [ "$(docker ps -a -q -f name=mysql)" ]; do
+            echo "Waiting for container 'mysql' to be created..."
+            sleep 2
+          done
+          
           until docker exec mysql mysqladmin ping -h localhost -u root -proot --silent; do
-            echo "Waiting for MySQL..."
+            echo "MySQL is starting up..."
             sleep 3
             timeout=$((timeout - 3))
-            if [ $timeout -le 0 ]; then exit 1; fi
+            if [ $timeout -le 0 ]; then
+              echo "MySQL failed to start within timeout"
+              docker logs mysql
+              exit 1
+            fi
           done
-          sleep 5 # Laisser le temps aux scripts d'init .sql de finir
         
       - name: Executer les tests de validation
         run: docker exec store_manager pytest
 
       - name: Status
         if: success()
-        run: echo "🚀 Labo 03 déployé et testé sur la VM!"
+        run: echo "Labo 03 déployé et testé sur la VM"
