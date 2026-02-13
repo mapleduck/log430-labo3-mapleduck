@@ -166,6 +166,26 @@ Succès.
 
 Déploiement très similaire au dernier labo, il faut encore une fois spécifier les noms des conteneurs car docker leur donne un nom unique et ils ne peuvent donc pas se retrouver entre eux.
 
+Les tests échouaient, puis je me suis rendu compte que lors de ce labo, il avait fallu créer la table stock, elle n'étais pas créé par défaut (ce qui était un des buts du labo). Mais évidemment, il faut faire de même sur la VM, car la VM n'a pas non plus la base de données.
+
+Ceci a donc été ajouté dans le `init.sql`:
+```
+-- Product stocks 
+-- Il faut automatiquement rajouter la table stock pour que le CI fonctionne.
+DROP TABLE IF EXISTS stocks;
+CREATE TABLE stocks (
+    product_id INT PRIMARY KEY,
+    quantity INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Mock data
+INSERT INTO stocks (product_id, quantity) VALUES
+(1, 10),
+(2, 50),
+(3, 100),
+(4, 0);
+```
 
 Résultat final, les tests passent le CI:
 

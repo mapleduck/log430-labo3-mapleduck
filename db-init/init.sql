@@ -66,3 +66,19 @@ INSERT INTO products (name, sku, price) VALUES
 ('Keyboard DEF', 'KB67890', 59.50),
 ('Gadget XYZ', 'GG12345', 5.75),
 ('27-inch Screen WYZ', 'SC27289', 299.75);
+
+-- Product stocks 
+-- Il faut automatiquement rajouter la table stock pour que le CI fonctionne.
+DROP TABLE IF EXISTS stocks;
+CREATE TABLE stocks (
+    product_id INT PRIMARY KEY,
+    quantity INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Mock data
+INSERT INTO stocks (product_id, quantity) VALUES
+(1, 10),
+(2, 50),
+(3, 100),
+(4, 0);
