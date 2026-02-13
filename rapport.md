@@ -14,8 +14,6 @@
 
 > 💡 Question 3 : Quels résultats avez-vous obtenus en utilisant l’endpoint POST /stocks/graphql-query avec la requête suggérée ? Veuillez joindre la sortie de votre requête dans Postman afin d’illustrer votre réponse.
 
-`{{baseURL}}/stocks/graphql-query`
-
 ```
 {
     "data": {
@@ -24,8 +22,8 @@
     "errors": null
 }
 ```
+Ceci est du au fait que le produit 1 (par défaut dans la collection Postman) n'est pas dans la cache redis car son stock n'a pas encore été mis à jour. Utilisons 13, qui a été interagit avec:
 
-Rien parce que l'id dans le body est 1. changeons la a par exemple produit 13:
 ```
 {
     "data": {
@@ -38,8 +36,13 @@ Rien parce que l'id dans le body est 1. changeons la a par exemple produit 13:
     "errors": null
 }
 ```
+On peut voir que toute les informations sont présentes.
+
 
 > 💡 Question 4 : Quelles lignes avez-vous changé dans update_stock_redis? Veuillez joindre du code afin d’illustrer votre réponse.
+
+
+
 
 Une opti aurai put etre faite ici mais je lai pas fait. Par exemple, jai du manuellement sync la metadata dans redis pour tout avec une nouvelle methode, et clear la cache manuellement.
 

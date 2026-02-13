@@ -1,6 +1,7 @@
 services:
   store_manager:
     build: .
+    container_name: store_manager
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
@@ -18,6 +19,7 @@ services:
   mysql:
     image: mysql:8.4.7
     restart: unless-stopped
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: labo03_db
@@ -39,6 +41,7 @@ services:
 
   redis:
     image: redis:7
+    container_name: redis
     restart: unless-stopped
     networks:
       - labo03-network
