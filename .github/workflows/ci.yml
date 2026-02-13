@@ -64,7 +64,7 @@ jobs:
           echo "Tables prêtes, lancement des tests !"
         
       - name: Executer les tests de validation
-        run: docker exec store_manager pytest src/tests
+        run: docker exec store_manager pytest
 
       - name: Status
         if: success()
