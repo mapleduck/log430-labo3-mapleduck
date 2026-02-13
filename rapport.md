@@ -7,6 +7,11 @@
 
 > 💡 Question 1 : Dans la RFC 7231, nous trouvons que certaines méthodes HTTP sont considérées comme sûres (safe) ou idempotentes, en fonction de leur capacité à modifier (ou non) l'état de l'application. Lisez les sections 4.2.1 et 4.2.2 de la RFC 7231 et répondez : parmi les méthodes mentionnées dans l'activité 2, lesquelles sont sûres, non sûres, idempotentes et/ou non idempotentes?
 
+Le GET (etapes 3 et 5) est sur et idempotent. Elle est read only, et ne modifie rien dans le serveur. Puisqu'elle est sure, elle est forcement idempotente.
+
+Le POST (etapes 1, 2, 4) est non sur et non idempotent. Il modifie le serveur et rajoute des lignes, ou met a jour des compteurs. Il est aussi non-idempotent car la meme requete de commande creera une deuxieme commande.
+
+Le DELETE (etape 6) est non sur mais idempotent. Elle altere des donnees sur le serveur, mais l'exécuter deux fois ne fera rien car la commande sera déjà supprimée et la base de donnée ne fera rien.
 
 > 💡 Question 2 : Décrivez l'utilisation de la méthode join dans ce cas. Utilisez les méthodes telles que décrites à Simple Relationship Joins et Joins to a Target with an ON Clause dans la documentation SQLAlchemy pour ajouter les colonnes demandées dans cette activité. Veuillez inclure le code pour illustrer votre réponse.
 
@@ -20,6 +25,7 @@ results = session.query(
 ).join(Product, Stock.product_id == Product.id).all()
 ```
 
+La methode join est utilisee pour faire une jointure avec une clause ON explicite. Comme les tables Product et Stock sont liees par l'ID du produit, le join permet d'avoir toute les donnees voulues.
 
 
 > 💡 Question 3 : Quels résultats avez-vous obtenus en utilisant l’endpoint POST /stocks/graphql-query avec la requête suggérée ? Veuillez joindre la sortie de votre requête dans Postman afin d’illustrer votre réponse.
