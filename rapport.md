@@ -210,9 +210,6 @@ INSERT INTO stocks (product_id, quantity) VALUES
 (4, 0);
 ```
 
-Résultat final, les tests passent le CI:
+Résultat final, les tests passent le CI via le runner:
 
-![runner output](./docs/img/Screenshot%20from%202026-02-05%2021-05-55.png)
-
-Resultat vu depuis github:
-![github UI](./docs/img/Screenshot%20from%202026-02-05%2021-06-13.png)
+![resultat github](./docs/img/Screenshot%20from%202026-02-12%2020-45-31.png)
