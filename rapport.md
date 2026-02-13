@@ -41,14 +41,62 @@ On peut voir que toute les informations sont présentes.
 
 > 💡 Question 4 : Quelles lignes avez-vous changé dans update_stock_redis? Veuillez joindre du code afin d’illustrer votre réponse.
 
+Les nouvelles lignes ont été marquées d'un +:
 
+```
+def update_stock_redis(order_items, operation):
+    """ Update stock quantities in Redis """
+    if not order_items:
+        return
+    r = get_redis_conn()
+    stock_keys = list(r.scan_iter("stock:*"))
+    if stock_keys:
++       session = get_sqlalchemy_session() # Utilisation d'une session alchemy
+        pipeline = r.pipeline()
+        for item in order_items:
+            if hasattr(item, 'product_id'):
+                product_id = item.product_id
+                quantity = item.quantity
+            else:
+                product_id = item['product_id']
+                quantity = item['quantity']
+            current_stock = r.hget(f"stock:{product_id}", "quantity")
+            current_stock = int(current_stock) if current_stock else 0
+            
+            if operation == '+':
+                new_quantity = current_stock + quantity
+            else:  
+                new_quantity = current_stock - quantity
+            
 
++           p = session.execute(
++               text("SELECT name, sku, price FROM products WHERE id = :id"), 
++               {"id": product_id}
++           ).fetchone()
++
++            pipeline.hset(f"stock:{product_id}", mapping={
++               "quantity": new_quantity,
++               "name": p.name,       # Ajouté
++               "sku": p.sku,         # Ajouté
++               "price": str(p.price) # Ajouté (converti en string pour Redis)
++           })
++
++           _upsert_stock_to_redis(r, session, product_id, quantity)
+        
+        pipeline.execute()
++       session.close() # on doit maintenant fermer la session
+    else:
+        _populate_redis_from_mysql(r)
+```
 
-Une opti aurai put etre faite ici mais je lai pas fait. Par exemple, jai du manuellement sync la metadata dans redis pour tout avec une nouvelle methode, et clear la cache manuellement.
+Voici ce qui a été rajouté:
+- get alchemy session et close alchemy session, évidemment on utilise maintenant alchemy, il faut l'ouvrir et le fermer.
+- dans l'exécution, on rajoute maintenant les colonnes manquantes
+- finalement, l'ajout de la méthode `_upsert_stock_to_redis`. Cette méthode a été créée à cause des complications Redis. Redis ne mettait sa cache à jour que pour les objets diretements affectés par une requête. C'est à dire qu'après un Redis flush (si jamais certaines valeurs comme le prix ou le stock avaient changé) Redis n'était pas à jour sur tout les items sauf l'item directement affecté par une requête POST sur le stock. Par conséquent, les appels au endpoint graphql n'étaient jamais à jour, avec plusieurs produits manquants, et d'autres n'ayant pas les bonnes informations. Donc, j'ai créé une méthode qui rafraichit tout les objet, et elle est appelée à chaque changement. C'est lourd, mais critique dans le contexte d'un laboratoire. Si c'était une base de donnée semi-statique, l'optimisation serait sensée, mais dans le cadre d'un laboratoire les valeurs sont mise à jour souvent et rapidement, et Redis doit refléter ces changements.
 
 > 💡 Question 5 : Quels résultats avez-vous obtenus en utilisant l’endpoint POST /stocks/graphql-query avec les améliorations ? Veuillez joindre la sortie de votre requête dans Postman afin d’illustrer votre réponse.
 
-
+Par défaut:
 ```
 {
     "data": {
@@ -73,6 +121,8 @@ Changeons la requete pour avoir les nouvelles colonnes:
   }
 }
 
+Résultat:
+```
 {
     "data": {
         "product": {
@@ -85,8 +135,18 @@ Changeons la requete pour avoir les nouvelles colonnes:
     },
     "errors": null
 }
+```
+Il s'agit du résultat attendu.
 
 
+
+> 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
+
+
+
+## Déploiement
+
+Pour commencer, voici le résultat du script de test de supplier app:
 ```
 dusty@dusty-laptop:~/SchoolRepos/log430-labo3-mapleduck/scripts$ docker compose up
 Attaching to supplier_app-1
@@ -100,23 +160,12 @@ supplier_app-1  | ...
 supplier_app-1  | 2026-02-12 23:57:49,219 - INFO - Waiting 10 seconds until next call...
 Gracefully Stopping... press Ctrl+C again to force
 ```
-
-> 💡 Question 6 : Examinez attentivement le fichier docker-compose.yml du répertoire scripts, ainsi que celui situé à la racine du projet. Qu’ont-ils en commun ? Par quel mécanisme ces conteneurs peuvent-ils communiquer entre eux ? Veuillez joindre du code YML afin d’illustrer votre réponse
-
+Succès.
 
 
-## Déploiement
 
-Déploiement plus complexe cette fois ci. Il a fallu être plus attentif. Il a fallu nettoyer les conteneurs des labos précédents, et rajouter plusieurs vérifications et nettoyage au ci yml du runner, comme par exemple:
-```
-- name: Cleanup
-    run: |
-        docker network rm labo02-network 2>/dev/null || true
-        docker rm -f mysql redis store_manager_cli 2>/dev/null || true
-        docker compose down -v --remove-orphans || true
-```
+Déploiement très similaire au dernier labo, il faut encore une fois spécifier les noms des conteneurs car docker leur donne un nom unique et ils ne peuvent donc pas se retrouver entre eux.
 
-Plusieurs de ces solutions ont été trouvées grâce à stackoverflow.
 
 Résultat final, les tests passent le CI:
 
