@@ -36,7 +36,7 @@ Ceci est du au fait que le produit 1 (par défaut dans la collection Postman) n'
     "errors": null
 }
 ```
-On peut voir que toute les informations sont présentes.
+On peut voir que toute les informations attendues sont présentes.
 
 
 > 💡 Question 4 : Quelles lignes avez-vous changé dans update_stock_redis? Veuillez joindre du code afin d’illustrer votre réponse.
